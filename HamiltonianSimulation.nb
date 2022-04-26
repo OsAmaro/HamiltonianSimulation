@@ -1,0 +1,2421 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     91319,       2413]
+NotebookOptionsPosition[     88830,       2363]
+NotebookOutlinePosition[     89295,       2382]
+CellTagsIndexPosition[     89252,       2379]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[TextData[StyleBox["Hamiltonian Simulation H=Z ", "Title",
+ FontWeight->"Regular",
+ FontColor->RGBColor[
+  0.2964217593652247, 0.6292210269321736, 0.2727702754253452]]], "Text",
+ CellChangeTimes->{{3.822636147120782*^9, 3.822636149053595*^9}, {
+   3.822636240732341*^9, 3.82263625191656*^9}, {3.822637212068983*^9, 
+   3.822637212721833*^9}, 3.822770593869432*^9, {3.826178767410568*^9, 
+   3.826178778145874*^9}, {3.826179988252692*^9, 3.826179992414234*^9}, {
+   3.826184450410564*^9, 
+   3.82618446511765*^9}},ExpressionUUID->"0c487dd8-d232-4ca0-b84d-\
+037254935472"],
+
+Cell[TextData[StyleBox["\[Section]4.7 Simulation of quantum systems, Nielsen \
+& Chuang", "Section",
+ FontSize->24,
+ FontVariations->{"Underline"->True},
+ FontColor->GrayLevel[0]]], "Text",
+ CellChangeTimes->{{3.8226362283387003`*^9, 3.822636334723393*^9}, {
+   3.822637289419742*^9, 3.82263728942037*^9}, 3.822770598930826*^9, {
+   3.822770643828999*^9, 3.822770657888399*^9}, {3.8261787920025873`*^9, 
+   3.826178797827198*^9}, {3.826178841817155*^9, 3.826178843064488*^9}, {
+   3.826184441235121*^9, 3.826184446117023*^9}, {3.8347603194294653`*^9, 
+   3.834760363187861*^9}, {3.834764970095244*^9, 3.8347649713281403`*^9}},
+ FontSize->14,ExpressionUUID->"331f0465-c40f-4c8f-9212-63e86a6d87d4"],
+
+Cell[TextData[{
+ StyleBox["Notebook: \[CapitalOAcute]scar Amaro, July 2021 @", "Section",
+  FontSize->24,
+  FontColor->GrayLevel[0]],
+ StyleBox[ButtonBox[" ",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://epp.ist.utl.pt/"], None},
+  ButtonNote->"http://epp.ist.utl.pt/"], "Section",
+  FontSize->24,
+  FontColor->GrayLevel[0]],
+ StyleBox[ButtonBox["GoLP-EPP",
+  BaseStyle->"Hyperlink",
+  ButtonData->{
+    URL["http://epp.ist.utl.pt/"], None},
+  ButtonNote->"http://epp.ist.utl.pt/"], "Section",
+  FontSize->24,
+  FontVariations->{"Underline"->True},
+  FontColor->GrayLevel[0]],
+ StyleBox["\nContact: oscar.amaro@tecnico.ulisboa.pt", "Section",
+  FontSize->24,
+  FontColor->GrayLevel[0]]
+}], "Text",
+ CellChangeTimes->{{3.8226362283387003`*^9, 3.822636334723393*^9}, 
+   3.822636391632341*^9, {3.8226372468331547`*^9, 3.822637246833611*^9}, {
+   3.8261788451108313`*^9, 3.826178845735269*^9}, {3.834760298433559*^9, 
+   3.834760300152108*^9}},
+ FontSize->14,ExpressionUUID->"6e9a06f3-3bc9-4cba-8cc6-e9837ef66ad2"],
+
+Cell[TextData[{
+ StyleBox["Introduction", "Section",
+  FontSize->24,
+  FontWeight->"Bold",
+  FontColor->GrayLevel[0]],
+ StyleBox["\nQuantum circuit for simulating the Hamiltonian H=", "Section",
+  FontSize->24,
+  FontColor->GrayLevel[0]],
+ StyleBox["\[CircleTimes]", "Section",
+  FontSize->24,
+  FontVariations->{"Underline"->True},
+  FontColor->GrayLevel[0]],
+ StyleBox["Z for time \[CapitalDelta]t.\nGet the Quantum Mathematica package \
+at https://homepage.cem.itesm.mx/lgomez/", "Section",
+  FontSize->24,
+  FontColor->GrayLevel[0]]
+}], "Text",
+ CellChangeTimes->{{3.8226362283387003`*^9, 3.822636334723393*^9}, {
+  3.822636391632341*^9, 3.8226364148286*^9}, {3.822636632459257*^9, 
+  3.82263666754714*^9}, {3.8226367225529222`*^9, 3.822636739164402*^9}, {
+  3.82277075923588*^9, 3.82277077440228*^9}, {3.826178854418439*^9, 
+  3.826178862237159*^9}, {3.8261844338961267`*^9, 3.826184456951223*^9}, {
+  3.834760348389503*^9, 3.834760394250696*^9}, {3.835503096542932*^9, 
+  3.83550309702794*^9}},
+ FontSize->14,ExpressionUUID->"b2b6588f-0fbe-42a9-a3c3-7ea567c69df0"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{"import", " ", "package"}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"Needs", "[", "\"\<Quantum`Computing`\>\"", "]"}], 
+   ";"}]}]], "Input",
+ CellChangeTimes->{{3.834760401768408*^9, 3.834760405786284*^9}, 
+   3.835504128974922*^9},
+ CellLabel->"In[1]:=",ExpressionUUID->"0089178e-3c2a-4647-a799-5f9c65852e5d"],
+
+Cell[CellGroupData[{
+
+Cell["n=1", "Chapter",
+ CellChangeTimes->{{3.834764743363666*^9, 3.834764745272519*^9}, {
+  3.8347647927154827`*^9, 3.834764792835589*^9}, {3.835503486153825*^9, 
+  3.835503486302964*^9}},ExpressionUUID->"48189caf-1983-4ee7-8168-\
+aa4d42774574"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"Clear", "[", 
+  RowBox[{
+  "\[CapitalDelta]t", ",", "I2", ",", "Z", ",", "RZ", ",", "U1", ",", "U2", 
+   ",", "rot", ",", "psi"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"I2", "=", 
+   RowBox[{"PauliMatrix", "[", "0", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Z", "=", 
+    RowBox[{"PauliMatrix", "[", "3", "]"}]}], ";"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"direct", " ", "method"}], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"U1", "=", 
+    RowBox[{"MatrixExp", "[", 
+     RowBox[{
+      RowBox[{"-", "I"}], " ", 
+      RowBox[{"KroneckerProduct", "[", 
+       RowBox[{"Z", ",", "I2"}], "]"}], "\[CapitalDelta]t"}], "]"}]}], ";"}], 
+  "\[IndentingNewLine]", "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"define", " ", "Rz", " ", "rotation"}], " ", 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SetQuantumGate", "[", 
+   RowBox[{"rot", ",", "1", ",", "\[IndentingNewLine]", 
+    RowBox[{"Function", "[", 
+     RowBox[{
+      RowBox[{"{", "q1", "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{"Function", "[", 
+       RowBox[{
+        RowBox[{"{", "\[CapitalDelta]t", "}"}], ",", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{
+          SuperscriptBox["\[ExponentialE]", 
+           RowBox[{
+            RowBox[{"-", "\[ImaginaryI]"}], " ", "\[CapitalDelta]t"}]], 
+          RowBox[{
+           TagBox[
+            RowBox[{"\[VerticalSeparator]", 
+             TagBox[
+              SubscriptBox["0", 
+               OverscriptBox["q1", "^"]],
+              Quantum`Notation`zz080KetArgs,
+              BaseStyle->{ShowSyntaxStyles -> True},
+              Editable->True,
+              Selectable->True], "\[RightAngleBracket]"}],
+            Quantum`Notation`zz080Ket,
+            BaseStyle->{ShowSyntaxStyles -> False},
+            Editable->False,
+            Selectable->False], "\[CenterDot]", 
+           TagBox[
+            RowBox[{"\[LeftAngleBracket]", 
+             TagBox[
+              SubscriptBox["0", 
+               OverscriptBox["q1", "^"]],
+              Quantum`Notation`zz080BraArgs,
+              BaseStyle->{ShowSyntaxStyles -> True},
+              Editable->True,
+              Selectable->True], "\[VerticalSeparator]"}],
+            Quantum`Notation`zz080Bra,
+            BaseStyle->{ShowSyntaxStyles -> False},
+            Editable->False,
+            Selectable->False]}]}], "+", 
+         RowBox[{
+          SuperscriptBox["\[ExponentialE]", 
+           RowBox[{
+            RowBox[{"+", "\[ImaginaryI]"}], " ", "\[CapitalDelta]t"}]], 
+          RowBox[{
+           TagBox[
+            RowBox[{"\[VerticalSeparator]", 
+             TagBox[
+              SubscriptBox["1", 
+               OverscriptBox["q1", "^"]],
+              Quantum`Notation`zz080KetArgs,
+              BaseStyle->{ShowSyntaxStyles -> True},
+              Editable->True,
+              Selectable->True], "\[RightAngleBracket]"}],
+            Quantum`Notation`zz080Ket,
+            BaseStyle->{ShowSyntaxStyles -> False},
+            Editable->False,
+            Selectable->False], "\[CenterDot]", 
+           TagBox[
+            RowBox[{"\[LeftAngleBracket]", 
+             TagBox[
+              SubscriptBox["1", 
+               OverscriptBox["q1", "^"]],
+              Quantum`Notation`zz080BraArgs,
+              BaseStyle->{ShowSyntaxStyles -> True},
+              Editable->True,
+              Selectable->True], "\[VerticalSeparator]"}],
+            Quantum`Notation`zz080Bra,
+            BaseStyle->{ShowSyntaxStyles -> False},
+            Editable->False,
+            Selectable->False]}]}]}]}], " ", "]"}]}], " ", "]"}]}], " ", 
+   "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"QuantumTableForm", "[", 
+   RowBox[{
+    SubscriptBox["rot", 
+     OverscriptBox["1", "^"]], "[", "\[CapitalDelta]t", "]"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"QuantumMatrixForm", "[", 
+   RowBox[{
+    SubscriptBox["rot", 
+     OverscriptBox["1", "^"]], "[", "\[CapitalDelta]t", "]"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"QuantumMatrixForm", "[", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[ScriptCapitalC]", 
+       TagBox[
+        RowBox[{"{", 
+         OverscriptBox["3", "^"], "}"}],
+        Quantum`Computing`zz020TPend,
+        Editable->True,
+        Selectable->True]], "[", 
+      TagBox[
+       TagBox[
+        SubscriptBox["\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+         TagBox[
+          OverscriptBox["4", "^"],
+          Quantum`Computing`zz020TPdat,
+          Editable->True,
+          Selectable->True]],
+        Quantum`Computing`zz020TP,
+        Editable->False,
+        Selectable->False],
+       Quantum`Computing`zz020TPdat,
+       Editable->True,
+       Selectable->True], "]"}],
+     Quantum`Computing`zz020TP,
+     Editable->False,
+     Selectable->False], "]"}], ";"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"build", " ", "circuit"}], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"circ", "=", 
+    RowBox[{
+     TagBox[
+      RowBox[{
+       SuperscriptBox["\[ScriptCapitalC]", 
+        TagBox[
+         RowBox[{"{", 
+          OverscriptBox["1", "^"], "}"}],
+         Quantum`Computing`zz020TPend,
+         Editable->True,
+         Selectable->True]], "[", 
+       TagBox[
+        TagBox[
+         SubscriptBox["\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+          TagBox[
+           OverscriptBox["2", "^"],
+           Quantum`Computing`zz020TPdat,
+           Editable->True,
+           Selectable->True]],
+         Quantum`Computing`zz020TP,
+         Editable->False,
+         Selectable->False],
+        Quantum`Computing`zz020TPdat,
+        Editable->True,
+        Selectable->True], "]"}],
+      Quantum`Computing`zz020TP,
+      Editable->False,
+      Selectable->False], "\[CenterDot]", 
+     RowBox[{
+      SubscriptBox["rot", 
+       OverscriptBox["2", "^"]], "[", "\[CapitalDelta]t", "]"}], 
+     "\[CenterDot]", 
+     TagBox[
+      RowBox[{
+       SuperscriptBox["\[ScriptCapitalC]", 
+        TagBox[
+         RowBox[{"{", 
+          OverscriptBox["1", "^"], "}"}],
+         Quantum`Computing`zz020TPend,
+         Editable->True,
+         Selectable->True]], "[", 
+       TagBox[
+        TagBox[
+         SubscriptBox["\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+          TagBox[
+           OverscriptBox["2", "^"],
+           Quantum`Computing`zz020TPdat,
+           Editable->True,
+           Selectable->True]],
+         Quantum`Computing`zz020TP,
+         Editable->False,
+         Selectable->False],
+        Quantum`Computing`zz020TPdat,
+        Editable->True,
+        Selectable->True], "]"}],
+      Quantum`Computing`zz020TP,
+      Editable->False,
+      Selectable->False]}]}], ";"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", "plot", " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{"QuantumPlot", "[", "circ", "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"U2", "=", 
+    RowBox[{"QuantumMatrix", "[", "circ", "]"}]}], ";"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"compare", " ", "unitaries"}], " ", 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{"Print", "[", 
+  RowBox[{"\"\<U1=\>\"", ",", "U1"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Print", "[", 
+   RowBox[{"\"\<U2=\>\"", ",", "U2"}], "]"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"define", " ", "test", " ", 
+    RowBox[{"ket", ".", " ", "We"}], " ", "are", " ", "only", " ", 
+    "interested", " ", "on", " ", "the", " ", "effect", " ", "of", " ", "the",
+     " ", "operators", " ", "on", " ", "an", " ", "arbitrary", " ", "ket", 
+    " ", 
+    RowBox[{"(", 
+     RowBox[{
+     "where", " ", "the", " ", "ancilla", " ", "is", " ", "supposed", " ", 
+      "to", " ", "start", " ", "as", " ", "0"}], ")"}]}], " ", 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"psi", "=", 
+   RowBox[{"ArrayFlatten", "[", 
+    RowBox[{
+     RowBox[{"KroneckerProduct", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"a", "[", "0", "]"}], ",", 
+         RowBox[{"a", "[", "1", "]"}]}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"1", ",", "0"}], "}"}]}], "]"}], ",", "1"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Print", "[", 
+   RowBox[{"\"\<\[Psi]=\>\"", ",", "psi"}], "]"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{"the", " ", "non"}], "-", 
+    RowBox[{
+    "zero", " ", "entries", " ", "of", " ", "this", " ", "ket", " ", "will", 
+     " ", "select", " ", "the", " ", "relevant", " ", "entries", " ", "of", 
+     " ", "the", " ", "operators"}]}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{
+    "because", " ", "of", " ", "zero", " ", "entries", " ", "in", " ", "U1"}],
+     ",", "U2", ",", " ", 
+    RowBox[{
+     RowBox[{
+     "we", " ", "need", " ", "to", " ", "add", " ", "\[Epsilon]", " ", "to", 
+      " ", "the", " ", "operators", " ", "and", " ", "then", " ", "take", " ",
+       "the", " ", "limit", " ", "\[Epsilon]"}], "->", "0"}]}], " ", 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{"Limit", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"U1", ".", "psi"}], "+", "\[Epsilon]"}], ")"}], "/", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"U2", ".", "psi"}], "+", "\[Epsilon]"}], ")"}]}], ",", 
+   RowBox[{"\[Epsilon]", "->", "0"}]}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "the", " ", "resulting", " ", "kets", " ", "are", " ", "the", " ", 
+    "same"}], " ", "*)"}]}]}], "Input",
+ CellChangeTimes->{{3.834760431974388*^9, 3.834760455540184*^9}, {
+   3.834760513284131*^9, 3.83476051357347*^9}, 3.834760617845277*^9, {
+   3.8347606608261766`*^9, 3.834760680370574*^9}, {3.834760765093151*^9, 
+   3.834760833218972*^9}, {3.8347610335363417`*^9, 3.834761050307308*^9}, {
+   3.834764268203321*^9, 3.834764276476491*^9}, {3.834764379230425*^9, 
+   3.834764430059423*^9}, {3.8347646327549553`*^9, 3.834764672151574*^9}, 
+   3.834764849789721*^9, 3.834764926798571*^9, {3.835358818176302*^9, 
+   3.8353588759092407`*^9}, {3.8353589302818203`*^9, 3.835359046976759*^9}, {
+   3.835359130023056*^9, 3.8353591323983183`*^9}, {3.835502823096766*^9, 
+   3.835503018156004*^9}, {3.835503054649514*^9, 3.8355030550487843`*^9}, 
+   3.835503229203474*^9, {3.835503261514029*^9, 3.835503467693804*^9}},
+ CellLabel->
+  "In[102]:=",ExpressionUUID->"b3b231df-e108-4cf3-b7e4-ba1236c1080b"],
+
+Cell[BoxData[
+ GraphicsBox[
+  TagBox[
+   TooltipBox[{
+     {RGBColor[0, 0, 
+       NCache[
+        Rational[4, 9], 0.4444444444444444]], Thickness[0.006], 
+      LineBox[{{-0.5, -1.}, {4.3, -1.}}], 
+      LineBox[{{-0.5, -2.}, {4.3, -2.}}]}, {
+      {RGBColor[0, 0, 
+        NCache[
+         Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+       RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       StyleBox[{},
+        StripOnInput->False,
+        FontFamily->"Verdana",
+        FontSize->Small,
+        Background->RGBColor[1, 1, 0.85]]}, 
+      {RGBColor[0, 
+        NCache[
+         Rational[2, 3], 0.6666666666666666], 0], Thickness[0.004], 
+       Arrowheads[Small], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], 
+        StyleBox[InsetBox[
+          InterpretationBox["1",
+           Quantum`Notation`zz080Operator[1]], {0., -0.75}],
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}, 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], 
+        StyleBox[InsetBox[
+          InterpretationBox["2",
+           Quantum`Notation`zz080Operator[2]], {0., -1.75}],
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}}}, 
+     {RGBColor[
+       NCache[
+        Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+      LineBox[{{1., -1.}, {1., -2.}}], 
+      {RGBColor[0, 1, 0], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       DiskBox[{1., -1.}, 0.125]}, 
+      {RGBColor[0, 0, 
+        NCache[
+         Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+       RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       StyleBox[{},
+        StripOnInput->False,
+        FontFamily->"Verdana",
+        FontSize->Small,
+        Background->RGBColor[1, 1, 0.85]]}, 
+      {RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+       Arrowheads[Small], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       LineBox[{{1., -2.}, {1., -2.}}], 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        StyleBox[{},
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}, 
+       {RGBColor[1, 1, 0.85], Thickness[0.003], Arrowheads[Small], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        DiskBox[{1., -2.}, 0.25], 
+        {RGBColor[0, 
+          NCache[
+           Rational[2, 3], 0.6666666666666666], 0], Thickness[0.004], 
+         LineBox[{{0.75, -2.}, {1.25, -2.}}], 
+         LineBox[{{1., -1.75}, {1., -2.25}}]}}}}, {
+      {RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+       LineBox[{{2., -2.}, {2., -2.}}]}, 
+      {RGBColor[1, 1, 0.85], Thickness[0.006], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       RectangleBox[{1.6666666666666667, -1.6666666666666667}, \
+{2.3333333333333335, -2.3333333333333335}], 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], 
+        StyleBox[InsetBox[
+          RowBox[{
+           TagBox["rot",
+            HoldForm], "(", "\[CapitalDelta]t", ")"}], {2., -2.}, 
+          ImageScaled[{Rational[1, 2], Rational[1, 2]}], Automatic, {1, 0}],
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}}, 
+      {RGBColor[0, 
+        NCache[
+         Rational[2, 3], 0.6666666666666666], 0], Thickness[0.004], 
+       Arrowheads[Small], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}]}}, 
+     {RGBColor[
+       NCache[
+        Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+      LineBox[{{3., -1.}, {3., -2.}}], 
+      {RGBColor[0, 1, 0], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       DiskBox[{3., -1.}, 0.125]}, 
+      {RGBColor[0, 0, 
+        NCache[
+         Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+       RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       StyleBox[{},
+        StripOnInput->False,
+        FontFamily->"Verdana",
+        FontSize->Small,
+        Background->RGBColor[1, 1, 0.85]]}, 
+      {RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+       Arrowheads[Small], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       LineBox[{{3., -2.}, {3., -2.}}], 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        StyleBox[{},
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}, 
+       {RGBColor[1, 1, 0.85], Thickness[0.003], Arrowheads[Small], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        DiskBox[{3., -2.}, 0.25], 
+        {RGBColor[0, 
+          NCache[
+           Rational[2, 3], 0.6666666666666666], 0], Thickness[0.004], 
+         LineBox[{{2.75, -2.}, {3.25, -2.}}], 
+         LineBox[{{3., -1.75}, {3., -2.25}}]}}}}},
+    RowBox[{
+      TagBox[
+       RowBox[{
+         SuperscriptBox["\[ScriptCapitalC]", 
+          TagBox[
+           RowBox[{"{", 
+             OverscriptBox["1", "^"], "}"}], Quantum`Computing`zz020TPend, 
+           Editable -> True, Selectable -> True]], "[", 
+         TagBox[
+          SubscriptBox[
+          "\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+           OverscriptBox["2", "^"]], Quantum`Computing`zz020TPdat, Editable -> 
+          True, Selectable -> True], "]"}], Quantum`Computing`zz020TP, 
+       Editable -> False, Selectable -> False], "\[CenterDot]", 
+      RowBox[{
+        SubscriptBox["rot", 
+         OverscriptBox["2", "^"]], "[", "\[CapitalDelta]t", "]"}], 
+      "\[CenterDot]", 
+      TagBox[
+       RowBox[{
+         SuperscriptBox["\[ScriptCapitalC]", 
+          TagBox[
+           RowBox[{"{", 
+             OverscriptBox["1", "^"], "}"}], Quantum`Computing`zz020TPend, 
+           Editable -> True, Selectable -> True]], "[", 
+         TagBox[
+          SubscriptBox[
+          "\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+           OverscriptBox["2", "^"]], Quantum`Computing`zz020TPdat, Editable -> 
+          True, Selectable -> True], "]"}], Quantum`Computing`zz020TP, 
+       Editable -> False, Selectable -> False]}]],
+   Annotation[#, 
+    Quantum`Notation`zz075NonCommutativeTimes[
+     Quantum`Computing`zz020Controlled[
+      Quantum`Computing`\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT][
+       Quantum`Notation`zz080Operator[2]], {
+       Quantum`Notation`zz080Operator[1]}], 
+     $CellContext`rot[
+      Quantum`Notation`zz080Operator[2]][$CellContext`\[CapitalDelta]t], 
+     Quantum`Computing`zz020Controlled[
+      Quantum`Computing`\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT][
+       Quantum`Notation`zz080Operator[2]], {
+       Quantum`Notation`zz080Operator[1]}]], "Tooltip"]& ],
+  AspectRatio->Automatic,
+  Background->RGBColor[0.9, 0.9, 0.9],
+  ContentSelectable->False,
+  Frame->False,
+  PlotRange->All,
+  PlotRangeClipping->True]], "Output",
+ CellChangeTimes->{
+  3.834760457994314*^9, 3.8347605416197987`*^9, 3.834760618193812*^9, {
+   3.834760661350615*^9, 3.834760681355569*^9}, {3.834760775433022*^9, 
+   3.834760833666519*^9}, {3.834761036546925*^9, 3.834761050901457*^9}, {
+   3.8347642686561193`*^9, 3.834764276797447*^9}, {3.834764382475877*^9, 
+   3.83476443056079*^9}, {3.8347646614104548`*^9, 3.8347646724619627`*^9}, 
+   3.8347649192915707`*^9, {3.835358810308405*^9, 3.835358876586299*^9}, {
+   3.8353589463244658`*^9, 3.8353589658672857`*^9}, {3.8353589994560833`*^9, 
+   3.835359047512348*^9}, 3.8353591328217287`*^9, 3.8355025998951893`*^9, {
+   3.835502824237566*^9, 3.835502850579132*^9}, 3.8355029454238663`*^9, {
+   3.8355029829712067`*^9, 3.835502987796513*^9}, 3.8355030185159197`*^9, 
+   3.8355030748482513`*^9, 3.8355031426166286`*^9, {3.835503286505232*^9, 
+   3.8355033088796988`*^9}, 3.835503354181766*^9, {3.835503451810033*^9, 
+   3.835503468409607*^9}},
+ CellLabel->
+  "Out[111]=",ExpressionUUID->"137209c7-080a-4780-be35-8a3e6daefd82"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"U1=\"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{
+         RowBox[{"-", "\[ImaginaryI]"}], " ", "\[CapitalDelta]t"}]], ",", "0",
+        ",", "0", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", 
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{
+         RowBox[{"-", "\[ImaginaryI]"}], " ", "\[CapitalDelta]t"}]], ",", "0",
+        ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0", ",", 
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{"\[ImaginaryI]", " ", "\[CapitalDelta]t"}]], ",", "0"}], 
+      "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0", ",", "0", ",", 
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{"\[ImaginaryI]", " ", "\[CapitalDelta]t"}]]}], "}"}]}], 
+    "}"}]}],
+  SequenceForm[
+  "U1=", {{E^(Complex[0, -1] $CellContext`\[CapitalDelta]t), 0, 0, 0}, {
+    0, E^(Complex[0, -1] $CellContext`\[CapitalDelta]t), 0, 0}, {
+    0, 0, E^(Complex[0, 1] $CellContext`\[CapitalDelta]t), 0}, {
+    0, 0, 0, E^(Complex[0, 1] $CellContext`\[CapitalDelta]t)}}],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.8355034519123583`*^9, 3.835503468516292*^9}},
+ CellLabel->
+  "During evaluation of \
+In[102]:=",ExpressionUUID->"ea12c35d-9a73-4179-990c-c1e2e64579f2"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"U2=\"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{
+         RowBox[{"-", "\[ImaginaryI]"}], " ", "\[CapitalDelta]t"}]], ",", "0",
+        ",", "0", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", 
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{"\[ImaginaryI]", " ", "\[CapitalDelta]t"}]], ",", "0", ",", 
+       "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0", ",", 
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{"\[ImaginaryI]", " ", "\[CapitalDelta]t"}]], ",", "0"}], 
+      "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0", ",", "0", ",", 
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{
+         RowBox[{"-", "\[ImaginaryI]"}], " ", "\[CapitalDelta]t"}]]}], 
+      "}"}]}], "}"}]}],
+  SequenceForm[
+  "U2=", {{E^(Complex[0, -1] $CellContext`\[CapitalDelta]t), 0, 0, 0}, {
+    0, E^(Complex[0, 1] $CellContext`\[CapitalDelta]t), 0, 0}, {
+    0, 0, E^(Complex[0, 1] $CellContext`\[CapitalDelta]t), 0}, {
+    0, 0, 0, E^(Complex[0, -1] $CellContext`\[CapitalDelta]t)}}],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.8355034519123583`*^9, 3.8355034685196323`*^9}},
+ CellLabel->
+  "During evaluation of \
+In[102]:=",ExpressionUUID->"442ab40c-1982-4f06-91e5-23cbfd68d9a0"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"\[Psi]=\"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"a", "[", "0", "]"}], ",", "0", ",", 
+     RowBox[{"a", "[", "1", "]"}], ",", "0"}], "}"}]}],
+  SequenceForm["\[Psi]=", {
+    $CellContext`a[0], 0, 
+    $CellContext`a[1], 0}],
+  Editable->False]], "Print",
+ CellChangeTimes->{{3.8355034519123583`*^9, 3.8355034685230713`*^9}},
+ CellLabel->
+  "During evaluation of \
+In[102]:=",ExpressionUUID->"e2a2f33e-9cfe-4bbd-8c64-3f09435fa813"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1", ",", "1", ",", "1", ",", "1"}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.834760457994314*^9, 3.8347605416197987`*^9, 3.834760618193812*^9, {
+   3.834760661350615*^9, 3.834760681355569*^9}, {3.834760775433022*^9, 
+   3.834760833666519*^9}, {3.834761036546925*^9, 3.834761050901457*^9}, {
+   3.8347642686561193`*^9, 3.834764276797447*^9}, {3.834764382475877*^9, 
+   3.83476443056079*^9}, {3.8347646614104548`*^9, 3.8347646724619627`*^9}, 
+   3.8347649192915707`*^9, {3.835358810308405*^9, 3.835358876586299*^9}, {
+   3.8353589463244658`*^9, 3.8353589658672857`*^9}, {3.8353589994560833`*^9, 
+   3.835359047512348*^9}, 3.8353591328217287`*^9, 3.8355025998951893`*^9, {
+   3.835502824237566*^9, 3.835502850579132*^9}, 3.8355029454238663`*^9, {
+   3.8355029829712067`*^9, 3.835502987796513*^9}, 3.8355030185159197`*^9, 
+   3.8355030748482513`*^9, 3.8355031426166286`*^9, {3.835503286505232*^9, 
+   3.8355033088796988`*^9}, 3.835503354181766*^9, {3.835503451810033*^9, 
+   3.8355034685256433`*^9}},
+ CellLabel->
+  "Out[117]=",ExpressionUUID->"60a5fe8f-e6dd-431d-ad3e-00eb9aa4d4e7"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["n=2", "Chapter",
+ CellChangeTimes->{{3.834764743363666*^9, 3.834764745272519*^9}, {
+  3.8347647927154827`*^9, 
+  3.834764792835589*^9}},ExpressionUUID->"ba6bf272-edad-4337-a900-\
+a222706ad931"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"Clear", "[", 
+  RowBox[{
+  "\[CapitalDelta]t", ",", "I2", ",", "Z", ",", "RZ", ",", "U1", ",", "U2", 
+   ",", "rot", ",", "psi"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"I2", "=", 
+   RowBox[{"PauliMatrix", "[", "0", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Z", "=", 
+    RowBox[{"PauliMatrix", "[", "3", "]"}]}], ";"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"direct", " ", "method"}], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"U1", "=", 
+    RowBox[{"MatrixExp", "[", 
+     RowBox[{
+      RowBox[{"-", "I"}], " ", 
+      RowBox[{"KroneckerProduct", "[", 
+       RowBox[{"Z", ",", "Z", ",", "I2"}], "]"}], "\[CapitalDelta]t"}], 
+     "]"}]}], ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"define", " ", "Rz", " ", "rotation"}], " ", 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SetQuantumGate", "[", 
+   RowBox[{"rot", ",", "1", ",", "\[IndentingNewLine]", 
+    RowBox[{"Function", "[", 
+     RowBox[{
+      RowBox[{"{", "q1", "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{"Function", "[", 
+       RowBox[{
+        RowBox[{"{", "\[CapitalDelta]t", "}"}], ",", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{
+          SuperscriptBox["\[ExponentialE]", 
+           RowBox[{
+            RowBox[{"-", "\[ImaginaryI]"}], " ", "\[CapitalDelta]t"}]], 
+          RowBox[{
+           TagBox[
+            RowBox[{"\[VerticalSeparator]", 
+             TagBox[
+              SubscriptBox["0", 
+               OverscriptBox["q1", "^"]],
+              Quantum`Notation`zz080KetArgs,
+              BaseStyle->{ShowSyntaxStyles -> True},
+              Editable->True,
+              Selectable->True], "\[RightAngleBracket]"}],
+            Quantum`Notation`zz080Ket,
+            BaseStyle->{ShowSyntaxStyles -> False},
+            Editable->False,
+            Selectable->False], "\[CenterDot]", 
+           TagBox[
+            RowBox[{"\[LeftAngleBracket]", 
+             TagBox[
+              SubscriptBox["0", 
+               OverscriptBox["q1", "^"]],
+              Quantum`Notation`zz080BraArgs,
+              BaseStyle->{ShowSyntaxStyles -> True},
+              Editable->True,
+              Selectable->True], "\[VerticalSeparator]"}],
+            Quantum`Notation`zz080Bra,
+            BaseStyle->{ShowSyntaxStyles -> False},
+            Editable->False,
+            Selectable->False]}]}], "+", 
+         RowBox[{
+          SuperscriptBox["\[ExponentialE]", 
+           RowBox[{
+            RowBox[{"+", "\[ImaginaryI]"}], " ", "\[CapitalDelta]t"}]], 
+          RowBox[{
+           TagBox[
+            RowBox[{"\[VerticalSeparator]", 
+             TagBox[
+              SubscriptBox["1", 
+               OverscriptBox["q1", "^"]],
+              Quantum`Notation`zz080KetArgs,
+              BaseStyle->{ShowSyntaxStyles -> True},
+              Editable->True,
+              Selectable->True], "\[RightAngleBracket]"}],
+            Quantum`Notation`zz080Ket,
+            BaseStyle->{ShowSyntaxStyles -> False},
+            Editable->False,
+            Selectable->False], "\[CenterDot]", 
+           TagBox[
+            RowBox[{"\[LeftAngleBracket]", 
+             TagBox[
+              SubscriptBox["1", 
+               OverscriptBox["q1", "^"]],
+              Quantum`Notation`zz080BraArgs,
+              BaseStyle->{ShowSyntaxStyles -> True},
+              Editable->True,
+              Selectable->True], "\[VerticalSeparator]"}],
+            Quantum`Notation`zz080Bra,
+            BaseStyle->{ShowSyntaxStyles -> False},
+            Editable->False,
+            Selectable->False]}]}]}]}], " ", "]"}]}], " ", "]"}]}], " ", 
+   "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"QuantumTableForm", "[", 
+   RowBox[{
+    SubscriptBox["rot", 
+     OverscriptBox["1", "^"]], "[", "\[CapitalDelta]t", "]"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"QuantumMatrixForm", "[", 
+   RowBox[{
+    SubscriptBox["rot", 
+     OverscriptBox["1", "^"]], "[", "\[CapitalDelta]t", "]"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"QuantumMatrixForm", "[", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[ScriptCapitalC]", 
+       TagBox[
+        RowBox[{"{", 
+         OverscriptBox["3", "^"], "}"}],
+        Quantum`Computing`zz020TPend,
+        Editable->True,
+        Selectable->True]], "[", 
+      TagBox[
+       TagBox[
+        SubscriptBox["\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+         TagBox[
+          OverscriptBox["4", "^"],
+          Quantum`Computing`zz020TPdat,
+          Editable->True,
+          Selectable->True]],
+        Quantum`Computing`zz020TP,
+        Editable->False,
+        Selectable->False],
+       Quantum`Computing`zz020TPdat,
+       Editable->True,
+       Selectable->True], "]"}],
+     Quantum`Computing`zz020TP,
+     Editable->False,
+     Selectable->False], "]"}], ";"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"build", " ", "circuit"}], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"circ", "=", 
+    RowBox[{
+     TagBox[
+      RowBox[{
+       SuperscriptBox["\[ScriptCapitalC]", 
+        TagBox[
+         RowBox[{"{", 
+          OverscriptBox["1", "^"], "}"}],
+         Quantum`Computing`zz020TPend,
+         Editable->True,
+         Selectable->True]], "[", 
+       TagBox[
+        TagBox[
+         SubscriptBox["\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+          TagBox[
+           OverscriptBox["3", "^"],
+           Quantum`Computing`zz020TPdat,
+           Editable->True,
+           Selectable->True]],
+         Quantum`Computing`zz020TP,
+         Editable->False,
+         Selectable->False],
+        Quantum`Computing`zz020TPdat,
+        Editable->True,
+        Selectable->True], "]"}],
+      Quantum`Computing`zz020TP,
+      Editable->False,
+      Selectable->False], "\[CenterDot]", 
+     TagBox[
+      RowBox[{
+       SuperscriptBox["\[ScriptCapitalC]", 
+        TagBox[
+         RowBox[{"{", 
+          OverscriptBox["2", "^"], "}"}],
+         Quantum`Computing`zz020TPend,
+         Editable->True,
+         Selectable->True]], "[", 
+       TagBox[
+        TagBox[
+         SubscriptBox["\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+          TagBox[
+           OverscriptBox["3", "^"],
+           Quantum`Computing`zz020TPdat,
+           Editable->True,
+           Selectable->True]],
+         Quantum`Computing`zz020TP,
+         Editable->False,
+         Selectable->False],
+        Quantum`Computing`zz020TPdat,
+        Editable->True,
+        Selectable->True], "]"}],
+      Quantum`Computing`zz020TP,
+      Editable->False,
+      Selectable->False], "\[CenterDot]", 
+     RowBox[{
+      SubscriptBox["rot", 
+       OverscriptBox["3", "^"]], "[", "\[CapitalDelta]t", "]"}], 
+     "\[CenterDot]", 
+     TagBox[
+      RowBox[{
+       SuperscriptBox["\[ScriptCapitalC]", 
+        TagBox[
+         RowBox[{"{", 
+          OverscriptBox["2", "^"], "}"}],
+         Quantum`Computing`zz020TPend,
+         Editable->True,
+         Selectable->True]], "[", 
+       TagBox[
+        TagBox[
+         SubscriptBox["\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+          TagBox[
+           OverscriptBox["3", "^"],
+           Quantum`Computing`zz020TPdat,
+           Editable->True,
+           Selectable->True]],
+         Quantum`Computing`zz020TP,
+         Editable->False,
+         Selectable->False],
+        Quantum`Computing`zz020TPdat,
+        Editable->True,
+        Selectable->True], "]"}],
+      Quantum`Computing`zz020TP,
+      Editable->False,
+      Selectable->False], "\[CenterDot]", 
+     TagBox[
+      RowBox[{
+       SuperscriptBox["\[ScriptCapitalC]", 
+        TagBox[
+         RowBox[{"{", 
+          OverscriptBox["1", "^"], "}"}],
+         Quantum`Computing`zz020TPend,
+         Editable->True,
+         Selectable->True]], "[", 
+       TagBox[
+        TagBox[
+         SubscriptBox["\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+          TagBox[
+           OverscriptBox["3", "^"],
+           Quantum`Computing`zz020TPdat,
+           Editable->True,
+           Selectable->True]],
+         Quantum`Computing`zz020TP,
+         Editable->False,
+         Selectable->False],
+        Quantum`Computing`zz020TPdat,
+        Editable->True,
+        Selectable->True], "]"}],
+      Quantum`Computing`zz020TP,
+      Editable->False,
+      Selectable->False]}]}], ";"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", "plot", " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{"QuantumPlot", "[", "circ", "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"U2", "=", 
+    RowBox[{"QuantumMatrix", "[", "circ", "]"}]}], ";"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"compare", " ", "unitaries"}], " ", 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"psi", "=", 
+   RowBox[{"ArrayFlatten", "[", 
+    RowBox[{
+     RowBox[{"KroneckerProduct", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"a", "[", "0", "]"}], ",", 
+         RowBox[{"a", "[", "1", "]"}]}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"a", "[", "2", "]"}], ",", 
+         RowBox[{"a", "[", "3", "]"}]}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"1", ",", "0"}], "}"}]}], "]"}], ",", "1"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Limit", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"U1", ".", "psi"}], "+", "\[Epsilon]"}], ")"}], "/", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"U2", ".", "psi"}], "+", "\[Epsilon]"}], ")"}]}], ",", 
+   RowBox[{"\[Epsilon]", "->", "0"}]}], "]"}]}], "Input",
+ CellChangeTimes->{{3.834760431974388*^9, 3.834760455540184*^9}, {
+   3.834760513284131*^9, 3.83476051357347*^9}, 3.834760617845277*^9, {
+   3.8347606608261766`*^9, 3.834760680370574*^9}, {3.834760765093151*^9, 
+   3.834760833218972*^9}, {3.8347610335363417`*^9, 3.834761050307308*^9}, {
+   3.834764268203321*^9, 3.834764276476491*^9}, {3.834764379230425*^9, 
+   3.834764430059423*^9}, {3.8347646327549553`*^9, 3.834764672151574*^9}, 
+   3.834764849789721*^9, 3.834764926798571*^9, {3.835358818176302*^9, 
+   3.8353588759092407`*^9}, {3.8353589302818203`*^9, 3.835359046976759*^9}, {
+   3.835359130023056*^9, 3.8353591323983183`*^9}, {3.835502823096766*^9, 
+   3.835503018156004*^9}, {3.835503054649514*^9, 3.8355030550487843`*^9}, {
+   3.835503322481583*^9, 
+   3.8355033248181868`*^9}},ExpressionUUID->"d6cfac19-2df0-4c13-bc93-\
+36d95bf91e5c"],
+
+Cell[BoxData[
+ GraphicsBox[
+  TagBox[
+   TooltipBox[{
+     {RGBColor[0, 0, 
+       NCache[
+        Rational[4, 9], 0.4444444444444444]], Thickness[0.006], 
+      LineBox[{{-0.5, -1.}, {6.3, -1.}}], LineBox[{{-0.5, -2.}, {6.3, -2.}}], 
+      LineBox[{{-0.5, -3.}, {6.3, -3.}}]}, {
+      {RGBColor[0, 0, 
+        NCache[
+         Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+       RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       StyleBox[{},
+        StripOnInput->False,
+        FontFamily->"Verdana",
+        FontSize->Small,
+        Background->RGBColor[1, 1, 0.85]]}, 
+      {RGBColor[0, 
+        NCache[
+         Rational[2, 3], 0.6666666666666666], 0], Thickness[0.004], 
+       Arrowheads[Small], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], 
+        StyleBox[InsetBox[
+          InterpretationBox["1",
+           Quantum`Notation`zz080Operator[1]], {0., -0.75}],
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}, 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], 
+        StyleBox[InsetBox[
+          InterpretationBox["2",
+           Quantum`Notation`zz080Operator[2]], {0., -1.75}],
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}, 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], 
+        StyleBox[InsetBox[
+          InterpretationBox["3",
+           Quantum`Notation`zz080Operator[3]], {0., -2.75}],
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}}}, 
+     {RGBColor[
+       NCache[
+        Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+      LineBox[{{1., -1.}, {1., -3.}}], 
+      {RGBColor[0, 1, 0], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       DiskBox[{1., -1.}, 0.125]}, 
+      {RGBColor[0, 0, 
+        NCache[
+         Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+       RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       StyleBox[{},
+        StripOnInput->False,
+        FontFamily->"Verdana",
+        FontSize->Small,
+        Background->RGBColor[1, 1, 0.85]]}, 
+      {RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+       Arrowheads[Small], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       LineBox[{{1., -3.}, {1., -3.}}], 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        StyleBox[{},
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}, 
+       {RGBColor[1, 1, 0.85], Thickness[0.003], Arrowheads[Small], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        DiskBox[{1., -3.}, 0.25], 
+        {RGBColor[0, 
+          NCache[
+           Rational[2, 3], 0.6666666666666666], 0], Thickness[0.004], 
+         LineBox[{{0.75, -3.}, {1.25, -3.}}], 
+         LineBox[{{1., -2.75}, {1., -3.25}}]}}}}, 
+     {RGBColor[
+       NCache[
+        Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+      LineBox[{{2., -2.}, {2., -3.}}], 
+      {RGBColor[0, 1, 0], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       DiskBox[{2., -2.}, 0.125]}, 
+      {RGBColor[0, 0, 
+        NCache[
+         Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+       RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       StyleBox[{},
+        StripOnInput->False,
+        FontFamily->"Verdana",
+        FontSize->Small,
+        Background->RGBColor[1, 1, 0.85]]}, 
+      {RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+       Arrowheads[Small], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       LineBox[{{2., -3.}, {2., -3.}}], 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        StyleBox[{},
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}, 
+       {RGBColor[1, 1, 0.85], Thickness[0.003], Arrowheads[Small], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        DiskBox[{2., -3.}, 0.25], 
+        {RGBColor[0, 
+          NCache[
+           Rational[2, 3], 0.6666666666666666], 0], Thickness[0.004], 
+         LineBox[{{1.75, -3.}, {2.25, -3.}}], 
+         LineBox[{{2., -2.75}, {2., -3.25}}]}}}}, {
+      {RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+       LineBox[{{3., -3.}, {3., -3.}}]}, 
+      {RGBColor[1, 1, 0.85], Thickness[0.006], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       RectangleBox[{2.6666666666666665, -2.6666666666666665}, \
+{3.3333333333333335, -3.3333333333333335}], 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], 
+        StyleBox[InsetBox[
+          RowBox[{
+           TagBox["rot",
+            HoldForm], "(", "\[CapitalDelta]t", ")"}], {3., -3.}, 
+          ImageScaled[{Rational[1, 2], Rational[1, 2]}], Automatic, {1, 0}],
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}}, 
+      {RGBColor[0, 
+        NCache[
+         Rational[2, 3], 0.6666666666666666], 0], Thickness[0.004], 
+       Arrowheads[Small], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}]}}, 
+     {RGBColor[
+       NCache[
+        Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+      LineBox[{{4., -2.}, {4., -3.}}], 
+      {RGBColor[0, 1, 0], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       DiskBox[{4., -2.}, 0.125]}, 
+      {RGBColor[0, 0, 
+        NCache[
+         Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+       RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       StyleBox[{},
+        StripOnInput->False,
+        FontFamily->"Verdana",
+        FontSize->Small,
+        Background->RGBColor[1, 1, 0.85]]}, 
+      {RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+       Arrowheads[Small], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       LineBox[{{4., -3.}, {4., -3.}}], 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        StyleBox[{},
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}, 
+       {RGBColor[1, 1, 0.85], Thickness[0.003], Arrowheads[Small], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        DiskBox[{4., -3.}, 0.25], 
+        {RGBColor[0, 
+          NCache[
+           Rational[2, 3], 0.6666666666666666], 0], Thickness[0.004], 
+         LineBox[{{3.75, -3.}, {4.25, -3.}}], 
+         LineBox[{{4., -2.75}, {4., -3.25}}]}}}}, 
+     {RGBColor[
+       NCache[
+        Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+      LineBox[{{5., -1.}, {5., -3.}}], 
+      {RGBColor[0, 1, 0], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       DiskBox[{5., -1.}, 0.125]}, 
+      {RGBColor[0, 0, 
+        NCache[
+         Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+       RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       StyleBox[{},
+        StripOnInput->False,
+        FontFamily->"Verdana",
+        FontSize->Small,
+        Background->RGBColor[1, 1, 0.85]]}, 
+      {RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+       Arrowheads[Small], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       LineBox[{{5., -3.}, {5., -3.}}], 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        StyleBox[{},
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}, 
+       {RGBColor[1, 1, 0.85], Thickness[0.003], Arrowheads[Small], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        DiskBox[{5., -3.}, 0.25], 
+        {RGBColor[0, 
+          NCache[
+           Rational[2, 3], 0.6666666666666666], 0], Thickness[0.004], 
+         LineBox[{{4.75, -3.}, {5.25, -3.}}], 
+         LineBox[{{5., -2.75}, {5., -3.25}}]}}}}},
+    RowBox[{
+      TagBox[
+       RowBox[{
+         SuperscriptBox["\[ScriptCapitalC]", 
+          TagBox[
+           RowBox[{"{", 
+             OverscriptBox["1", "^"], "}"}], Quantum`Computing`zz020TPend, 
+           Editable -> True, Selectable -> True]], "[", 
+         TagBox[
+          SubscriptBox[
+          "\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+           OverscriptBox["3", "^"]], Quantum`Computing`zz020TPdat, Editable -> 
+          True, Selectable -> True], "]"}], Quantum`Computing`zz020TP, 
+       Editable -> False, Selectable -> False], "\[CenterDot]", 
+      TagBox[
+       RowBox[{
+         SuperscriptBox["\[ScriptCapitalC]", 
+          TagBox[
+           RowBox[{"{", 
+             OverscriptBox["2", "^"], "}"}], Quantum`Computing`zz020TPend, 
+           Editable -> True, Selectable -> True]], "[", 
+         TagBox[
+          SubscriptBox[
+          "\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+           OverscriptBox["3", "^"]], Quantum`Computing`zz020TPdat, Editable -> 
+          True, Selectable -> True], "]"}], Quantum`Computing`zz020TP, 
+       Editable -> False, Selectable -> False], "\[CenterDot]", 
+      RowBox[{
+        SubscriptBox["rot", 
+         OverscriptBox["3", "^"]], "[", "\[CapitalDelta]t", "]"}], 
+      "\[CenterDot]", 
+      TagBox[
+       RowBox[{
+         SuperscriptBox["\[ScriptCapitalC]", 
+          TagBox[
+           RowBox[{"{", 
+             OverscriptBox["2", "^"], "}"}], Quantum`Computing`zz020TPend, 
+           Editable -> True, Selectable -> True]], "[", 
+         TagBox[
+          SubscriptBox[
+          "\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+           OverscriptBox["3", "^"]], Quantum`Computing`zz020TPdat, Editable -> 
+          True, Selectable -> True], "]"}], Quantum`Computing`zz020TP, 
+       Editable -> False, Selectable -> False], "\[CenterDot]", 
+      TagBox[
+       RowBox[{
+         SuperscriptBox["\[ScriptCapitalC]", 
+          TagBox[
+           RowBox[{"{", 
+             OverscriptBox["1", "^"], "}"}], Quantum`Computing`zz020TPend, 
+           Editable -> True, Selectable -> True]], "[", 
+         TagBox[
+          SubscriptBox[
+          "\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+           OverscriptBox["3", "^"]], Quantum`Computing`zz020TPdat, Editable -> 
+          True, Selectable -> True], "]"}], Quantum`Computing`zz020TP, 
+       Editable -> False, Selectable -> False]}]],
+   Annotation[#, 
+    Quantum`Notation`zz075NonCommutativeTimes[
+     Quantum`Computing`zz020Controlled[
+      Quantum`Computing`\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT][
+       Quantum`Notation`zz080Operator[3]], {
+       Quantum`Notation`zz080Operator[1]}], 
+     Quantum`Computing`zz020Controlled[
+      Quantum`Computing`\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT][
+       Quantum`Notation`zz080Operator[3]], {
+       Quantum`Notation`zz080Operator[2]}], 
+     $CellContext`rot[
+      Quantum`Notation`zz080Operator[3]][$CellContext`\[CapitalDelta]t], 
+     Quantum`Computing`zz020Controlled[
+      Quantum`Computing`\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT][
+       Quantum`Notation`zz080Operator[3]], {
+       Quantum`Notation`zz080Operator[2]}], 
+     Quantum`Computing`zz020Controlled[
+      Quantum`Computing`\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT][
+       Quantum`Notation`zz080Operator[3]], {
+       Quantum`Notation`zz080Operator[1]}]], "Tooltip"]& ],
+  AspectRatio->Automatic,
+  Background->RGBColor[0.9, 0.9, 0.9],
+  ContentSelectable->False,
+  Frame->False,
+  PlotRange->All,
+  PlotRangeClipping->True]], "Output",
+ CellChangeTimes->{
+  3.834760457994314*^9, 3.8347605416197987`*^9, 3.834760618193812*^9, {
+   3.834760661350615*^9, 3.834760681355569*^9}, {3.834760775433022*^9, 
+   3.834760833666519*^9}, {3.834761036546925*^9, 3.834761050901457*^9}, {
+   3.8347642686561193`*^9, 3.834764276797447*^9}, {3.834764382475877*^9, 
+   3.83476443056079*^9}, {3.8347646614104548`*^9, 3.8347646724619627`*^9}, 
+   3.8347649192915707`*^9, {3.835358810308405*^9, 3.835358876586299*^9}, {
+   3.8353589463244658`*^9, 3.8353589658672857`*^9}, {3.8353589994560833`*^9, 
+   3.835359047512348*^9}, 3.8353591328217287`*^9, 3.8355025998951893`*^9, {
+   3.835502824237566*^9, 3.835502850579132*^9}, 3.8355029454238663`*^9, {
+   3.8355029829712067`*^9, 3.835502987796513*^9}, 3.8355030185159197`*^9, 
+   3.8355030748482513`*^9, 3.8355031426166286`*^9},
+ CellLabel->"Out[11]=",ExpressionUUID->"170aee70-da9c-4da4-806d-58bc6f4f0551"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1"}],
+   "}"}]], "Output",
+ CellChangeTimes->{
+  3.834760457994314*^9, 3.8347605416197987`*^9, 3.834760618193812*^9, {
+   3.834760661350615*^9, 3.834760681355569*^9}, {3.834760775433022*^9, 
+   3.834760833666519*^9}, {3.834761036546925*^9, 3.834761050901457*^9}, {
+   3.8347642686561193`*^9, 3.834764276797447*^9}, {3.834764382475877*^9, 
+   3.83476443056079*^9}, {3.8347646614104548`*^9, 3.8347646724619627`*^9}, 
+   3.8347649192915707`*^9, {3.835358810308405*^9, 3.835358876586299*^9}, {
+   3.8353589463244658`*^9, 3.8353589658672857`*^9}, {3.8353589994560833`*^9, 
+   3.835359047512348*^9}, 3.8353591328217287`*^9, 3.8355025998951893`*^9, {
+   3.835502824237566*^9, 3.835502850579132*^9}, 3.8355029454238663`*^9, {
+   3.8355029829712067`*^9, 3.835502987796513*^9}, 3.8355030185159197`*^9, 
+   3.8355030748482513`*^9, 3.835503143102754*^9},
+ CellLabel->"Out[14]=",ExpressionUUID->"3d33174d-7162-4df1-9f6d-b1424b0fe94f"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["n=3", "Chapter",
+ CellChangeTimes->{{3.834764743363666*^9, 3.834764745272519*^9}, {
+  3.834764878366356*^9, 3.834764878865394*^9}, {3.834764942755477*^9, 
+  3.83476494297983*^9}},ExpressionUUID->"1b302e41-5c03-4032-be91-\
+e87e1fb16b06"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"Clear", "[", 
+  RowBox[{
+  "\[CapitalDelta]t", ",", "I2", ",", "Z", ",", "RZ", ",", "U1", ",", "U2", 
+   ",", "psi"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"I2", "=", 
+   RowBox[{"PauliMatrix", "[", "0", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Z", "=", 
+    RowBox[{"PauliMatrix", "[", "3", "]"}]}], ";"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"direct", " ", "method"}], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"U1", "=", 
+    RowBox[{"MatrixExp", "[", 
+     RowBox[{
+      RowBox[{"-", "I"}], " ", 
+      RowBox[{"KroneckerProduct", "[", 
+       RowBox[{"Z", ",", "Z", ",", "Z", ",", "I2"}], "]"}], 
+      "\[CapitalDelta]t"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"define", " ", "Rz", " ", "rotation"}], " ", 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SetQuantumGate", "[", 
+   RowBox[{"RZ", ",", "1", ",", "\[IndentingNewLine]", 
+    RowBox[{"Function", "[", 
+     RowBox[{
+      RowBox[{"{", "q1", "}"}], ",", "\[IndentingNewLine]", 
+      RowBox[{"Function", "[", 
+       RowBox[{
+        RowBox[{"{", "\[CapitalDelta]t", "}"}], ",", "\[IndentingNewLine]", 
+        RowBox[{
+         RowBox[{
+          SuperscriptBox["\[ExponentialE]", 
+           RowBox[{
+            RowBox[{"-", "\[ImaginaryI]"}], " ", "\[CapitalDelta]t"}]], 
+          RowBox[{
+           TagBox[
+            RowBox[{"\[VerticalSeparator]", 
+             TagBox[
+              SubscriptBox["0", 
+               OverscriptBox["q1", "^"]],
+              Quantum`Notation`zz080KetArgs,
+              BaseStyle->{ShowSyntaxStyles -> True},
+              Editable->True,
+              Selectable->True], "\[RightAngleBracket]"}],
+            Quantum`Notation`zz080Ket,
+            BaseStyle->{ShowSyntaxStyles -> False},
+            Editable->False,
+            Selectable->False], "\[CenterDot]", 
+           TagBox[
+            RowBox[{"\[LeftAngleBracket]", 
+             TagBox[
+              SubscriptBox["0", 
+               OverscriptBox["q1", "^"]],
+              Quantum`Notation`zz080BraArgs,
+              BaseStyle->{ShowSyntaxStyles -> True},
+              Editable->True,
+              Selectable->True], "\[VerticalSeparator]"}],
+            Quantum`Notation`zz080Bra,
+            BaseStyle->{ShowSyntaxStyles -> False},
+            Editable->False,
+            Selectable->False]}]}], "+", 
+         RowBox[{
+          SuperscriptBox["\[ExponentialE]", 
+           RowBox[{
+            RowBox[{"+", "\[ImaginaryI]"}], " ", "\[CapitalDelta]t"}]], 
+          RowBox[{
+           TagBox[
+            RowBox[{"\[VerticalSeparator]", 
+             TagBox[
+              SubscriptBox["1", 
+               OverscriptBox["q1", "^"]],
+              Quantum`Notation`zz080KetArgs,
+              BaseStyle->{ShowSyntaxStyles -> True},
+              Editable->True,
+              Selectable->True], "\[RightAngleBracket]"}],
+            Quantum`Notation`zz080Ket,
+            BaseStyle->{ShowSyntaxStyles -> False},
+            Editable->False,
+            Selectable->False], "\[CenterDot]", 
+           TagBox[
+            RowBox[{"\[LeftAngleBracket]", 
+             TagBox[
+              SubscriptBox["1", 
+               OverscriptBox["q1", "^"]],
+              Quantum`Notation`zz080BraArgs,
+              BaseStyle->{ShowSyntaxStyles -> True},
+              Editable->True,
+              Selectable->True], "\[VerticalSeparator]"}],
+            Quantum`Notation`zz080Bra,
+            BaseStyle->{ShowSyntaxStyles -> False},
+            Editable->False,
+            Selectable->False]}]}]}]}], " ", "]"}]}], " ", "]"}]}], " ", 
+   "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"QuantumTableForm", "[", 
+   RowBox[{
+    SubscriptBox["rot", 
+     OverscriptBox["1", "^"]], "[", "\[CapitalDelta]t", "]"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"QuantumMatrixForm", "[", 
+   RowBox[{
+    SubscriptBox["rot", 
+     OverscriptBox["1", "^"]], "[", "\[CapitalDelta]t", "]"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"QuantumMatrixForm", "[", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[ScriptCapitalC]", 
+       TagBox[
+        RowBox[{"{", 
+         OverscriptBox["3", "^"], "}"}],
+        Quantum`Computing`zz020TPend,
+        Editable->True,
+        Selectable->True]], "[", 
+      TagBox[
+       TagBox[
+        SubscriptBox["\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+         TagBox[
+          OverscriptBox["4", "^"],
+          Quantum`Computing`zz020TPdat,
+          Editable->True,
+          Selectable->True]],
+        Quantum`Computing`zz020TP,
+        Editable->False,
+        Selectable->False],
+       Quantum`Computing`zz020TPdat,
+       Editable->True,
+       Selectable->True], "]"}],
+     Quantum`Computing`zz020TP,
+     Editable->False,
+     Selectable->False], "]"}], ";"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"build", " ", "circuit"}], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"circ", "=", 
+    RowBox[{
+     TagBox[
+      RowBox[{
+       SuperscriptBox["\[ScriptCapitalC]", 
+        TagBox[
+         RowBox[{"{", 
+          OverscriptBox["1", "^"], "}"}],
+         Quantum`Computing`zz020TPend,
+         Editable->True,
+         Selectable->True]], "[", 
+       TagBox[
+        TagBox[
+         SubscriptBox["\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+          TagBox[
+           OverscriptBox["4", "^"],
+           Quantum`Computing`zz020TPdat,
+           Editable->True,
+           Selectable->True]],
+         Quantum`Computing`zz020TP,
+         Editable->False,
+         Selectable->False],
+        Quantum`Computing`zz020TPdat,
+        Editable->True,
+        Selectable->True], "]"}],
+      Quantum`Computing`zz020TP,
+      Editable->False,
+      Selectable->False], "\[CenterDot]", 
+     TagBox[
+      RowBox[{
+       SuperscriptBox["\[ScriptCapitalC]", 
+        TagBox[
+         RowBox[{"{", 
+          OverscriptBox["2", "^"], "}"}],
+         Quantum`Computing`zz020TPend,
+         Editable->True,
+         Selectable->True]], "[", 
+       TagBox[
+        TagBox[
+         SubscriptBox["\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+          TagBox[
+           OverscriptBox["4", "^"],
+           Quantum`Computing`zz020TPdat,
+           Editable->True,
+           Selectable->True]],
+         Quantum`Computing`zz020TP,
+         Editable->False,
+         Selectable->False],
+        Quantum`Computing`zz020TPdat,
+        Editable->True,
+        Selectable->True], "]"}],
+      Quantum`Computing`zz020TP,
+      Editable->False,
+      Selectable->False], "\[CenterDot]", 
+     TagBox[
+      RowBox[{
+       SuperscriptBox["\[ScriptCapitalC]", 
+        TagBox[
+         RowBox[{"{", 
+          OverscriptBox["3", "^"], "}"}],
+         Quantum`Computing`zz020TPend,
+         Editable->True,
+         Selectable->True]], "[", 
+       TagBox[
+        TagBox[
+         SubscriptBox["\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+          TagBox[
+           OverscriptBox["4", "^"],
+           Quantum`Computing`zz020TPdat,
+           Editable->True,
+           Selectable->True]],
+         Quantum`Computing`zz020TP,
+         Editable->False,
+         Selectable->False],
+        Quantum`Computing`zz020TPdat,
+        Editable->True,
+        Selectable->True], "]"}],
+      Quantum`Computing`zz020TP,
+      Editable->False,
+      Selectable->False], "\[CenterDot]", 
+     RowBox[{
+      SubscriptBox["rot", 
+       OverscriptBox["4", "^"]], "[", "\[CapitalDelta]t", "]"}], 
+     "\[CenterDot]", 
+     TagBox[
+      RowBox[{
+       SuperscriptBox["\[ScriptCapitalC]", 
+        TagBox[
+         RowBox[{"{", 
+          OverscriptBox["3", "^"], "}"}],
+         Quantum`Computing`zz020TPend,
+         Editable->True,
+         Selectable->True]], "[", 
+       TagBox[
+        TagBox[
+         SubscriptBox["\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+          TagBox[
+           OverscriptBox["4", "^"],
+           Quantum`Computing`zz020TPdat,
+           Editable->True,
+           Selectable->True]],
+         Quantum`Computing`zz020TP,
+         Editable->False,
+         Selectable->False],
+        Quantum`Computing`zz020TPdat,
+        Editable->True,
+        Selectable->True], "]"}],
+      Quantum`Computing`zz020TP,
+      Editable->False,
+      Selectable->False], "\[CenterDot]", 
+     TagBox[
+      RowBox[{
+       SuperscriptBox["\[ScriptCapitalC]", 
+        TagBox[
+         RowBox[{"{", 
+          OverscriptBox["2", "^"], "}"}],
+         Quantum`Computing`zz020TPend,
+         Editable->True,
+         Selectable->True]], "[", 
+       TagBox[
+        TagBox[
+         SubscriptBox["\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+          TagBox[
+           OverscriptBox["4", "^"],
+           Quantum`Computing`zz020TPdat,
+           Editable->True,
+           Selectable->True]],
+         Quantum`Computing`zz020TP,
+         Editable->False,
+         Selectable->False],
+        Quantum`Computing`zz020TPdat,
+        Editable->True,
+        Selectable->True], "]"}],
+      Quantum`Computing`zz020TP,
+      Editable->False,
+      Selectable->False], "\[CenterDot]", 
+     TagBox[
+      RowBox[{
+       SuperscriptBox["\[ScriptCapitalC]", 
+        TagBox[
+         RowBox[{"{", 
+          OverscriptBox["1", "^"], "}"}],
+         Quantum`Computing`zz020TPend,
+         Editable->True,
+         Selectable->True]], "[", 
+       TagBox[
+        TagBox[
+         SubscriptBox["\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+          TagBox[
+           OverscriptBox["4", "^"],
+           Quantum`Computing`zz020TPdat,
+           Editable->True,
+           Selectable->True]],
+         Quantum`Computing`zz020TP,
+         Editable->False,
+         Selectable->False],
+        Quantum`Computing`zz020TPdat,
+        Editable->True,
+        Selectable->True], "]"}],
+      Quantum`Computing`zz020TP,
+      Editable->False,
+      Selectable->False]}]}], ";"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", "plot", " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{"QuantumPlot", "[", "circ", "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"U2", "=", 
+    RowBox[{"QuantumMatrix", "[", "circ", "]"}]}], ";"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"compare", " ", "unitaries"}], " ", 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"psi", "=", 
+   RowBox[{"ArrayFlatten", "[", 
+    RowBox[{
+     RowBox[{"KroneckerProduct", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"a", "[", "0", "]"}], ",", 
+         RowBox[{"a", "[", "1", "]"}]}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"a", "[", "2", "]"}], ",", 
+         RowBox[{"a", "[", "3", "]"}]}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"a", "[", "4", "]"}], ",", 
+         RowBox[{"a", "[", "5", "]"}]}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"1", ",", "0"}], "}"}]}], "]"}], ",", "1"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Limit", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"U1", ".", "psi"}], "+", "\[Epsilon]"}], ")"}], "/", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"U2", ".", "psi"}], "+", "\[Epsilon]"}], ")"}]}], ",", 
+   RowBox[{"\[Epsilon]", "->", "0"}]}], "]"}]}], "Input",
+ CellChangeTimes->{{3.834760431974388*^9, 3.834760455540184*^9}, {
+   3.834760513284131*^9, 3.83476051357347*^9}, 3.834760617845277*^9, {
+   3.8347606608261766`*^9, 3.834760680370574*^9}, {3.834760765093151*^9, 
+   3.834760833218972*^9}, {3.8347610335363417`*^9, 3.834761050307308*^9}, {
+   3.834764268203321*^9, 3.834764276476491*^9}, {3.834764379230425*^9, 
+   3.834764430059423*^9}, {3.8347646327549553`*^9, 3.834764672151574*^9}, {
+   3.834764781852303*^9, 3.8347648223530607`*^9}, 3.834764857002377*^9, {
+   3.834764903511466*^9, 3.83476490523944*^9}, {3.835503023160906*^9, 
+   3.835503047723846*^9}},
+ CellLabel->"In[15]:=",ExpressionUUID->"d975550c-3f4c-47df-95b0-1f3a8b12408e"],
+
+Cell[BoxData[
+ GraphicsBox[
+  TagBox[
+   TooltipBox[{
+     {RGBColor[0, 0, 
+       NCache[
+        Rational[4, 9], 0.4444444444444444]], Thickness[0.006], 
+      LineBox[{{-0.5, -1.}, {8.3, -1.}}], LineBox[{{-0.5, -2.}, {8.3, -2.}}], 
+      LineBox[{{-0.5, -3.}, {8.3, -3.}}], 
+      LineBox[{{-0.5, -4.}, {8.3, -4.}}]}, {
+      {RGBColor[0, 0, 
+        NCache[
+         Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+       RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       StyleBox[{},
+        StripOnInput->False,
+        FontFamily->"Verdana",
+        FontSize->Small,
+        Background->RGBColor[1, 1, 0.85]]}, 
+      {RGBColor[0, 
+        NCache[
+         Rational[2, 3], 0.6666666666666666], 0], Thickness[0.004], 
+       Arrowheads[Small], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], 
+        StyleBox[InsetBox[
+          InterpretationBox["1",
+           Quantum`Notation`zz080Operator[1]], {0., -0.75}],
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}, 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], 
+        StyleBox[InsetBox[
+          InterpretationBox["2",
+           Quantum`Notation`zz080Operator[2]], {0., -1.75}],
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}, 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], 
+        StyleBox[InsetBox[
+          InterpretationBox["3",
+           Quantum`Notation`zz080Operator[3]], {0., -2.75}],
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}, 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], 
+        StyleBox[InsetBox[
+          InterpretationBox["4",
+           Quantum`Notation`zz080Operator[4]], {0., -3.75}],
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}}}, 
+     {RGBColor[
+       NCache[
+        Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+      LineBox[{{1., -1.}, {1., -4.}}], 
+      {RGBColor[0, 1, 0], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       DiskBox[{1., -1.}, 0.125]}, 
+      {RGBColor[0, 0, 
+        NCache[
+         Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+       RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       StyleBox[{},
+        StripOnInput->False,
+        FontFamily->"Verdana",
+        FontSize->Small,
+        Background->RGBColor[1, 1, 0.85]]}, 
+      {RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+       Arrowheads[Small], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       LineBox[{{1., -4.}, {1., -4.}}], 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        StyleBox[{},
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}, 
+       {RGBColor[1, 1, 0.85], Thickness[0.003], Arrowheads[Small], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        DiskBox[{1., -4.}, 0.25], 
+        {RGBColor[0, 
+          NCache[
+           Rational[2, 3], 0.6666666666666666], 0], Thickness[0.004], 
+         LineBox[{{0.75, -4.}, {1.25, -4.}}], 
+         LineBox[{{1., -3.75}, {1., -4.25}}]}}}}, 
+     {RGBColor[
+       NCache[
+        Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+      LineBox[{{2., -2.}, {2., -4.}}], 
+      {RGBColor[0, 1, 0], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       DiskBox[{2., -2.}, 0.125]}, 
+      {RGBColor[0, 0, 
+        NCache[
+         Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+       RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       StyleBox[{},
+        StripOnInput->False,
+        FontFamily->"Verdana",
+        FontSize->Small,
+        Background->RGBColor[1, 1, 0.85]]}, 
+      {RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+       Arrowheads[Small], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       LineBox[{{2., -4.}, {2., -4.}}], 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        StyleBox[{},
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}, 
+       {RGBColor[1, 1, 0.85], Thickness[0.003], Arrowheads[Small], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        DiskBox[{2., -4.}, 0.25], 
+        {RGBColor[0, 
+          NCache[
+           Rational[2, 3], 0.6666666666666666], 0], Thickness[0.004], 
+         LineBox[{{1.75, -4.}, {2.25, -4.}}], 
+         LineBox[{{2., -3.75}, {2., -4.25}}]}}}}, 
+     {RGBColor[
+       NCache[
+        Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+      LineBox[{{3., -3.}, {3., -4.}}], 
+      {RGBColor[0, 1, 0], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       DiskBox[{3., -3.}, 0.125]}, 
+      {RGBColor[0, 0, 
+        NCache[
+         Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+       RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       StyleBox[{},
+        StripOnInput->False,
+        FontFamily->"Verdana",
+        FontSize->Small,
+        Background->RGBColor[1, 1, 0.85]]}, 
+      {RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+       Arrowheads[Small], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       LineBox[{{3., -4.}, {3., -4.}}], 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        StyleBox[{},
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}, 
+       {RGBColor[1, 1, 0.85], Thickness[0.003], Arrowheads[Small], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        DiskBox[{3., -4.}, 0.25], 
+        {RGBColor[0, 
+          NCache[
+           Rational[2, 3], 0.6666666666666666], 0], Thickness[0.004], 
+         LineBox[{{2.75, -4.}, {3.25, -4.}}], 
+         LineBox[{{3., -3.75}, {3., -4.25}}]}}}}, {
+      {RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+       LineBox[{{4., -4.}, {4., -4.}}]}, 
+      {RGBColor[1, 1, 0.85], Thickness[0.006], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       RectangleBox[{3.6666666666666665, -3.6666666666666665}, \
+{4.333333333333333, -4.333333333333333}], 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], 
+        StyleBox[InsetBox[
+          RowBox[{
+           TagBox["rot",
+            HoldForm], "(", "\[CapitalDelta]t", ")"}], {4., -4.}, 
+          ImageScaled[{Rational[1, 2], Rational[1, 2]}], Automatic, {1, 0}],
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}}, 
+      {RGBColor[0, 
+        NCache[
+         Rational[2, 3], 0.6666666666666666], 0], Thickness[0.004], 
+       Arrowheads[Small], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}]}}, 
+     {RGBColor[
+       NCache[
+        Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+      LineBox[{{5., -3.}, {5., -4.}}], 
+      {RGBColor[0, 1, 0], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       DiskBox[{5., -3.}, 0.125]}, 
+      {RGBColor[0, 0, 
+        NCache[
+         Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+       RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       StyleBox[{},
+        StripOnInput->False,
+        FontFamily->"Verdana",
+        FontSize->Small,
+        Background->RGBColor[1, 1, 0.85]]}, 
+      {RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+       Arrowheads[Small], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       LineBox[{{5., -4.}, {5., -4.}}], 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        StyleBox[{},
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}, 
+       {RGBColor[1, 1, 0.85], Thickness[0.003], Arrowheads[Small], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        DiskBox[{5., -4.}, 0.25], 
+        {RGBColor[0, 
+          NCache[
+           Rational[2, 3], 0.6666666666666666], 0], Thickness[0.004], 
+         LineBox[{{4.75, -4.}, {5.25, -4.}}], 
+         LineBox[{{5., -3.75}, {5., -4.25}}]}}}}, 
+     {RGBColor[
+       NCache[
+        Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+      LineBox[{{6., -2.}, {6., -4.}}], 
+      {RGBColor[0, 1, 0], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       DiskBox[{6., -2.}, 0.125]}, 
+      {RGBColor[0, 0, 
+        NCache[
+         Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+       RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       StyleBox[{},
+        StripOnInput->False,
+        FontFamily->"Verdana",
+        FontSize->Small,
+        Background->RGBColor[1, 1, 0.85]]}, 
+      {RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+       Arrowheads[Small], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       LineBox[{{6., -4.}, {6., -4.}}], 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        StyleBox[{},
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}, 
+       {RGBColor[1, 1, 0.85], Thickness[0.003], Arrowheads[Small], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        DiskBox[{6., -4.}, 0.25], 
+        {RGBColor[0, 
+          NCache[
+           Rational[2, 3], 0.6666666666666666], 0], Thickness[0.004], 
+         LineBox[{{5.75, -4.}, {6.25, -4.}}], 
+         LineBox[{{6., -3.75}, {6., -4.25}}]}}}}, 
+     {RGBColor[
+       NCache[
+        Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+      LineBox[{{7., -1.}, {7., -4.}}], 
+      {RGBColor[0, 1, 0], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       DiskBox[{7., -1.}, 0.125]}, 
+      {RGBColor[0, 0, 
+        NCache[
+         Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+       RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       StyleBox[{},
+        StripOnInput->False,
+        FontFamily->"Verdana",
+        FontSize->Small,
+        Background->RGBColor[1, 1, 0.85]]}, 
+      {RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.004], 
+       Arrowheads[Small], EdgeForm[{RGBColor[
+        NCache[
+         Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+       LineBox[{{7., -4.}, {7., -4.}}], 
+       {RGBColor[0, 0, 
+         NCache[
+          Rational[4, 9], 0.4444444444444444]], Thickness[0.006], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        StyleBox[{},
+         StripOnInput->False,
+         FontFamily->"Verdana",
+         FontSize->Small,
+         Background->RGBColor[1, 1, 0.85]]}, 
+       {RGBColor[1, 1, 0.85], Thickness[0.003], Arrowheads[Small], EdgeForm[{
+        RGBColor[
+         NCache[
+          Rational[4, 9], 0.4444444444444444], 0, 0], Thickness[0.006]}], 
+        DiskBox[{7., -4.}, 0.25], 
+        {RGBColor[0, 
+          NCache[
+           Rational[2, 3], 0.6666666666666666], 0], Thickness[0.004], 
+         LineBox[{{6.75, -4.}, {7.25, -4.}}], 
+         LineBox[{{7., -3.75}, {7., -4.25}}]}}}}},
+    RowBox[{
+      TagBox[
+       RowBox[{
+         SuperscriptBox["\[ScriptCapitalC]", 
+          TagBox[
+           RowBox[{"{", 
+             OverscriptBox["1", "^"], "}"}], Quantum`Computing`zz020TPend, 
+           Editable -> True, Selectable -> True]], "[", 
+         TagBox[
+          SubscriptBox[
+          "\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+           OverscriptBox["4", "^"]], Quantum`Computing`zz020TPdat, Editable -> 
+          True, Selectable -> True], "]"}], Quantum`Computing`zz020TP, 
+       Editable -> False, Selectable -> False], "\[CenterDot]", 
+      TagBox[
+       RowBox[{
+         SuperscriptBox["\[ScriptCapitalC]", 
+          TagBox[
+           RowBox[{"{", 
+             OverscriptBox["2", "^"], "}"}], Quantum`Computing`zz020TPend, 
+           Editable -> True, Selectable -> True]], "[", 
+         TagBox[
+          SubscriptBox[
+          "\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+           OverscriptBox["4", "^"]], Quantum`Computing`zz020TPdat, Editable -> 
+          True, Selectable -> True], "]"}], Quantum`Computing`zz020TP, 
+       Editable -> False, Selectable -> False], "\[CenterDot]", 
+      TagBox[
+       RowBox[{
+         SuperscriptBox["\[ScriptCapitalC]", 
+          TagBox[
+           RowBox[{"{", 
+             OverscriptBox["3", "^"], "}"}], Quantum`Computing`zz020TPend, 
+           Editable -> True, Selectable -> True]], "[", 
+         TagBox[
+          SubscriptBox[
+          "\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+           OverscriptBox["4", "^"]], Quantum`Computing`zz020TPdat, Editable -> 
+          True, Selectable -> True], "]"}], Quantum`Computing`zz020TP, 
+       Editable -> False, Selectable -> False], "\[CenterDot]", 
+      RowBox[{
+        SubscriptBox["rot", 
+         OverscriptBox["4", "^"]], "[", "\[CapitalDelta]t", "]"}], 
+      "\[CenterDot]", 
+      TagBox[
+       RowBox[{
+         SuperscriptBox["\[ScriptCapitalC]", 
+          TagBox[
+           RowBox[{"{", 
+             OverscriptBox["3", "^"], "}"}], Quantum`Computing`zz020TPend, 
+           Editable -> True, Selectable -> True]], "[", 
+         TagBox[
+          SubscriptBox[
+          "\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+           OverscriptBox["4", "^"]], Quantum`Computing`zz020TPdat, Editable -> 
+          True, Selectable -> True], "]"}], Quantum`Computing`zz020TP, 
+       Editable -> False, Selectable -> False], "\[CenterDot]", 
+      TagBox[
+       RowBox[{
+         SuperscriptBox["\[ScriptCapitalC]", 
+          TagBox[
+           RowBox[{"{", 
+             OverscriptBox["2", "^"], "}"}], Quantum`Computing`zz020TPend, 
+           Editable -> True, Selectable -> True]], "[", 
+         TagBox[
+          SubscriptBox[
+          "\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+           OverscriptBox["4", "^"]], Quantum`Computing`zz020TPdat, Editable -> 
+          True, Selectable -> True], "]"}], Quantum`Computing`zz020TP, 
+       Editable -> False, Selectable -> False], "\[CenterDot]", 
+      TagBox[
+       RowBox[{
+         SuperscriptBox["\[ScriptCapitalC]", 
+          TagBox[
+           RowBox[{"{", 
+             OverscriptBox["1", "^"], "}"}], Quantum`Computing`zz020TPend, 
+           Editable -> True, Selectable -> True]], "[", 
+         TagBox[
+          SubscriptBox[
+          "\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT]", 
+           OverscriptBox["4", "^"]], Quantum`Computing`zz020TPdat, Editable -> 
+          True, Selectable -> True], "]"}], Quantum`Computing`zz020TP, 
+       Editable -> False, Selectable -> False]}]],
+   Annotation[#, 
+    Quantum`Notation`zz075NonCommutativeTimes[
+     Quantum`Computing`zz020Controlled[
+      Quantum`Computing`\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT][
+       Quantum`Notation`zz080Operator[4]], {
+       Quantum`Notation`zz080Operator[1]}], 
+     Quantum`Computing`zz020Controlled[
+      Quantum`Computing`\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT][
+       Quantum`Notation`zz080Operator[4]], {
+       Quantum`Notation`zz080Operator[2]}], 
+     Quantum`Computing`zz020Controlled[
+      Quantum`Computing`\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT][
+       Quantum`Notation`zz080Operator[4]], {
+       Quantum`Notation`zz080Operator[3]}], 
+     $CellContext`rot[
+      Quantum`Notation`zz080Operator[4]][$CellContext`\[CapitalDelta]t], 
+     Quantum`Computing`zz020Controlled[
+      Quantum`Computing`\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT][
+       Quantum`Notation`zz080Operator[4]], {
+       Quantum`Notation`zz080Operator[3]}], 
+     Quantum`Computing`zz020Controlled[
+      Quantum`Computing`\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT][
+       Quantum`Notation`zz080Operator[4]], {
+       Quantum`Notation`zz080Operator[2]}], 
+     Quantum`Computing`zz020Controlled[
+      Quantum`Computing`\[ScriptCapitalN]\[ScriptCapitalO]\[ScriptCapitalT][
+       Quantum`Notation`zz080Operator[4]], {
+       Quantum`Notation`zz080Operator[1]}]], "Tooltip"]& ],
+  AspectRatio->Automatic,
+  Background->RGBColor[0.9, 0.9, 0.9],
+  ContentSelectable->False,
+  Frame->False,
+  PlotRange->All,
+  PlotRangeClipping->True]], "Output",
+ CellChangeTimes->{
+  3.834760457994314*^9, 3.8347605416197987`*^9, 3.834760618193812*^9, {
+   3.834760661350615*^9, 3.834760681355569*^9}, {3.834760775433022*^9, 
+   3.834760833666519*^9}, {3.834761036546925*^9, 3.834761050901457*^9}, {
+   3.8347642686561193`*^9, 3.834764276797447*^9}, {3.834764382475877*^9, 
+   3.83476443056079*^9}, {3.8347646614104548`*^9, 3.8347646724619627`*^9}, 
+   3.834764838860602*^9, 3.834764912909297*^9, {3.835503024700604*^9, 
+   3.835503049112629*^9}, 3.8355031436192207`*^9},
+ CellLabel->"Out[24]=",ExpressionUUID->"b6b1a2cd-8f13-40ce-944e-f2cb63d6c10b"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", 
+   ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", 
+   "1"}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.834760457994314*^9, 3.8347605416197987`*^9, 3.834760618193812*^9, {
+   3.834760661350615*^9, 3.834760681355569*^9}, {3.834760775433022*^9, 
+   3.834760833666519*^9}, {3.834761036546925*^9, 3.834761050901457*^9}, {
+   3.8347642686561193`*^9, 3.834764276797447*^9}, {3.834764382475877*^9, 
+   3.83476443056079*^9}, {3.8347646614104548`*^9, 3.8347646724619627`*^9}, 
+   3.834764838860602*^9, 3.834764912909297*^9, {3.835503024700604*^9, 
+   3.835503049112629*^9}, 3.835503147452112*^9},
+ CellLabel->"Out[27]=",ExpressionUUID->"312069fe-7a07-4df8-b477-f4ef065bf710"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1440, 769},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+PrintingCopies->1,
+PrintingPageRange->{1, Automatic},
+Magnification->1.5,
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (May 11, 2021)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"c7953882-2fd6-49eb-b6f9-a87e9e5a3ae8"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 574, 10, 109, "Text",ExpressionUUID->"0c487dd8-d232-4ca0-b84d-037254935472"],
+Cell[1135, 32, 696, 11, 69, "Text",ExpressionUUID->"331f0465-c40f-4c8f-9212-63e86a6d87d4"],
+Cell[1834, 45, 1024, 27, 118, "Text",ExpressionUUID->"6e9a06f3-3bc9-4cba-8cc6-e9837ef66ad2"],
+Cell[2861, 74, 1070, 24, 167, "Text",ExpressionUUID->"b2b6588f-0fbe-42a9-a3c3-7ea567c69df0"],
+Cell[3934, 100, 387, 9, 78, "Input",ExpressionUUID->"0089178e-3c2a-4647-a799-5f9c65852e5d"],
+Cell[CellGroupData[{
+Cell[4346, 113, 245, 4, 103, "Chapter",ExpressionUUID->"48189caf-1983-4ee7-8168-aa4d42774574"],
+Cell[CellGroupData[{
+Cell[4616, 121, 10626, 291, 1059, "Input",ExpressionUUID->"b3b231df-e108-4cf3-b7e4-ba1236c1080b"],
+Cell[15245, 414, 9280, 231, 218, "Output",ExpressionUUID->"137209c7-080a-4780-be35-8a3e6daefd82"],
+Cell[CellGroupData[{
+Cell[24550, 649, 1410, 36, 39, "Print",ExpressionUUID->"ea12c35d-9a73-4179-990c-c1e2e64579f2"],
+Cell[25963, 687, 1414, 36, 39, "Print",ExpressionUUID->"442ab40c-1982-4f06-91e5-23cbfd68d9a0"],
+Cell[27380, 725, 510, 14, 36, "Print",ExpressionUUID->"e2a2f33e-9cfe-4bbd-8c64-3f09435fa813"]
+}, Open  ]],
+Cell[27905, 742, 1120, 18, 52, "Output",ExpressionUUID->"60a5fe8f-e6dd-431d-ad3e-00eb9aa4d4e7"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[29074, 766, 199, 4, 103, "Chapter",ExpressionUUID->"ba6bf272-edad-4337-a900-a222706ad931"],
+Cell[CellGroupData[{
+Cell[29298, 774, 10593, 305, 812, "Input",ExpressionUUID->"d6cfac19-2df0-4c13-bc93-36d95bf91e5c"],
+Cell[39894, 1081, 14665, 366, 244, "Output",ExpressionUUID->"170aee70-da9c-4da4-806d-58bc6f4f0551"],
+Cell[54562, 1449, 1034, 17, 52, "Output",ExpressionUUID->"3d33174d-7162-4df1-9f6d-b1424b0fe94f"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[55645, 1472, 242, 4, 103, "Chapter",ExpressionUUID->"1b302e41-5c03-4032-be91-e87e1fb16b06"],
+Cell[CellGroupData[{
+Cell[55912, 1480, 12198, 360, 842, "Input",ExpressionUUID->"d975550c-3f4c-47df-95b0-1f3a8b12408e"],
+Cell[68113, 1842, 19875, 501, 258, "Output",ExpressionUUID->"b6b1a2cd-8f13-40ce-944e-f2cb63d6c10b"],
+Cell[87991, 2345, 811, 14, 52, "Output",ExpressionUUID->"312069fe-7a07-4df8-b477-f4ef065bf710"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
